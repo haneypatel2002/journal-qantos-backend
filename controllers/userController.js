@@ -1,6 +1,17 @@
 const User = require('../models/User');
 const JournalEntry = require('../models/JournalEntry');
 
+// Get all users
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find({}).sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 // Create or get user by name
 const createUser = async (req, res) => {
     try {
@@ -116,4 +127,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { createUser, getUser, updateStreak, updateUser, deleteUser };
+module.exports = { createUser, getUser, getUsers, updateStreak, updateUser, deleteUser };
