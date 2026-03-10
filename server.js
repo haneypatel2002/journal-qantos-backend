@@ -13,12 +13,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+let lastDbError = null;
+
 // Database connection middleware
 app.use(async (req, res, next) => {
     try {
         await connectDB();
+        lastDbError = null;
         next();
     } catch (error) {
+        lastDbError = error.message;
         console.error('Database middleware error:', error.message);
         // We don't block the request here, but controllers will fail gracefully 
         // OR we can return an error if it's an API route
@@ -43,8 +47,14 @@ app.use('/api/challenges', require('./routes/challengeRoutes'));
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', mongodb: mongoose.connection.readyState });
+    res.json({
+        status: 'ok',
+        mongodb: mongoose.connection.readyState,
+        lastError: lastDbError,
+        env: process.env.MONGODB_URI ? 'Defined' : 'Missing'
+    });
 });
+
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
