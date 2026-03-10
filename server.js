@@ -7,14 +7,31 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
-
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Database connection middleware
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        console.error('Database middleware error:', error.message);
+        // We don't block the request here, but controllers will fail gracefully 
+        // OR we can return an error if it's an API route
+        if (req.path.startsWith('/api')) {
+            return res.status(500).json({
+                message: 'Database connection error',
+                error: error.message
+            });
+        }
+        next();
+    }
+});
+
 
 app.get('/', (req, res) => {
     res.json({ message: 'Journal Qantos API is running' });
