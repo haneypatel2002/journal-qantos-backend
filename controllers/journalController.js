@@ -91,4 +91,19 @@ const getMoodData = async (req, res) => {
     }
 };
 
-module.exports = { createEntry, getEntries, getEntryByDate, updateEntry, getMoodData };
+// Delete entry
+const deleteEntry = async (req, res) => {
+    try {
+        const entry = await JournalEntry.findById(req.params.id);
+        if (!entry) {
+            return res.status(404).json({ message: 'Entry not found' });
+        }
+
+        await JournalEntry.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Entry deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { createEntry, getEntries, getEntryByDate, updateEntry, getMoodData, deleteEntry };

@@ -6,6 +6,7 @@ const {
     getEntryByDate,
     updateEntry,
     getMoodData,
+    deleteEntry,
 } = require('../controllers/journalController');
 
 // POST /api/journal - Create entry
@@ -22,5 +23,8 @@ router.get('/:userId/:date', getEntryByDate);
 
 // PUT /api/journal/:id - Update entry
 router.put('/:id', updateEntry);
+
+// DELETE /api/journal/:id - Delete entry
+router.delete('/:id', deleteEntry);
 
 module.exports = router;
