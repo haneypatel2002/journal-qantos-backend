@@ -12,21 +12,27 @@ const getUsers = async (req, res) => {
 };
 
 
-// Create or get user by name
+// Create or get user by device_id
 const createUser = async (req, res) => {
     try {
-        const { name } = req.body;
-        if (!name) {
-            return res.status(400).json({ message: 'Name is required' });
+        const { name, device_id } = req.body;
+        if (!name || !device_id) {
+            return res.status(400).json({ message: 'Name and device_id are required' });
         }
 
-        // Check if user already exists
-        let user = await User.findOne({ name: name.trim() });
+        // Check if user already exists by device_id
+        let user = await User.findOne({ device_id: device_id.trim() });
         if (user) {
+            // Update name if they entered a different one this time
+            user.name = name.trim();
+            await user.save();
             return res.json(user);
         }
 
-        user = await User.create({ name: name.trim() });
+        user = await User.create({ 
+            name: name.trim(), 
+            device_id: device_id.trim() 
+        });
         res.status(201).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });

@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    device_id: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+    },
     streakCount: {
         type: Number,
         default: 0,
